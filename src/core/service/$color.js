@@ -38,6 +38,7 @@ export let getLoopColors = function (num, alpha) {
     // 根据情况返回颜色数组
     if (num <= colorList.length) {
         // 这种情况就不需要任何处理
+        return colorList;
     } else {
         // 如果正好是集合长度的倍数
         if (num % colorList.length == 0) {

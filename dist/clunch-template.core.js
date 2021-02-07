@@ -4,12 +4,12 @@
  *
  * author 你好2007 < https://hai2007.gitee.io/sweethome >
  *
- * version 1.3.1
+ * version 1.4.1
  *
  * Copyright (c) 2020-2021 hai2007 走一步，再走一步。
  * Released under the MIT license
  *
- * Date:Sun Feb 07 2021 16:20:06 GMT+0800 (GMT+08:00)
+ * Date:Sun Feb 07 2021 16:50:02 GMT+0800 (GMT+08:00)
  */
 (function () {
   'use strict';
@@ -478,7 +478,10 @@
     var colorList = ['rgba(84,112,198,' + alpha + ")", 'rgba(145,204,117,' + alpha + ")", 'rgba(250,200,88,' + alpha + ")", 'rgba(238,102,102,' + alpha + ")", 'rgba(115,192,222,' + alpha + ")", 'rgba(59,162,114,' + alpha + ")", 'rgba(252,132,82,' + alpha + ")", 'rgba(154,96,180,' + alpha + ")", 'rgba(234,124,204,' + alpha + ")"];
     var colors = []; // 根据情况返回颜色数组
 
-    if (num <= colorList.length) ; else {
+    if (num <= colorList.length) {
+      // 这种情况就不需要任何处理
+      return colorList;
+    } else {
       // 如果正好是集合长度的倍数
       if (num % colorList.length == 0) {
         // 将颜色数组循环加入后再返回
