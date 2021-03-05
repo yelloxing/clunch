@@ -9,6 +9,7 @@
   <a href="https://www.jsdelivr.com/package/npm/clunch"><img src="https://data.jsdelivr.com/v1/package/npm/clunch/badge" alt="CDN"></a>
   <a href="https://www.npmjs.com/package/clunch"><img src="https://img.shields.io/npm/v/clunch.svg" alt="Version"></a>
   <a href="https://github.com/hai2007/clunch/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/clunch.svg" alt="License"></a>
+    <a href="https://github.com/hai2007/clunch" target='_blank'><img alt="GitHub repo stars" src="https://img.shields.io/github/stars/hai2007/clunch?style=social"></a>
 </p>
 
 - 你可以查看[在线文档](https://hai2007.gitee.io/clunch/)学习或查看文档进行使用！
@@ -85,11 +86,6 @@ new Clunch({
 - 数据绑定和画布监听等，帮助你不需要关注绘图细节，就和开发一个普通的html页面一样简单
 
 具体的请查看[在线文档](https://hai2007.gitee.io/clunch/)了解详情！
-
-## 联系我们
-
-- QQ: 2501482523
-- Email: 2501482523@qq.com
 
 开源协议
 ---------------------------------------

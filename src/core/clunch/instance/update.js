@@ -58,7 +58,7 @@ export function updateMixin(Clunch) {
                 for (let regionName in region) {
 
                     let that = this;
-                    region[regionName](function (subName, data) {
+                    region[regionName].call(that, function (subName, data) {
 
                         // 如果传递了子区域名称
                         if (arguments.length > 0) subName = subName + "";
@@ -143,9 +143,7 @@ export function updateMixin(Clunch) {
 
                 // 继承scope
                 for (let scopeKey in pScope) {
-                    if (!(scopeKey in renderAOP[i].scope)) {
-                        renderAOP[i].scope[scopeKey] = pScope[scopeKey];
-                    }
+                    renderAOP[i].scope[scopeKey] = pScope[scopeKey];
                 }
 
                 // id可以采用默认的计算机制，也可以由用户自定义
@@ -181,9 +179,7 @@ export function updateMixin(Clunch) {
                         renderAOP[i].scope[cFor.value] = data_for[forKey];
                         if (cFor.key != null) renderAOP[i].scope[cFor.key] = isArray(data_for) ? (+forKey) : forKey;
 
-                        // 考虑到子组件会修改scope，目前没有好的方法恢复
-                        // 后续找到更好的方法会替换这里
-                        let temp = doit([JSON.parse(JSON.stringify(renderAOP[i]))], {}, isSubAttrs, id + "for" + forKey + "-", true);
+                        let temp = doit([renderAOP[i]], {}, isSubAttrs, id + "for" + forKey + "-", true);
                         if (isSubAttrs) {
                             for (let j = 0; j < temp.length; j++) {
                                 subRenderSeries.push(temp[j]);
@@ -242,9 +238,6 @@ export function updateMixin(Clunch) {
                         else renderSeries.push(seriesItem);
                     }
                 }
-
-                // 完成了恢复scope
-                renderAOP[i].scope = {};
 
             }
 

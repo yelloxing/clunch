@@ -4,12 +4,12 @@
  *
  * author 你好2007 < https://hai2007.gitee.io/sweethome >
  *
- * version 1.4.1
+ * version 1.4.4
  *
  * Copyright (c) 2020-2021 hai2007 走一步，再走一步。
  * Released under the MIT license
  *
- * Date:Sun Feb 07 2021 16:50:02 GMT+0800 (GMT+08:00)
+ * Date:Wed Feb 24 2021 17:34:00 GMT+0800 (GMT+08:00)
  */
 (function () {
   'use strict';
@@ -937,14 +937,22 @@
   }; // 刻度计算
 
 
-  function ruler(cormax, cormin, cornumber) {
-    var tmpstep;
-    cornumber = 5; //先判断所有数据都相等的情况
+  function ruler(cormax, cormin) {
+    var cornumber = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 5;
+    var tmpstep, corstep, temp; //先判断所有数据都相等的情况
 
     if (cormax == cormin) {
+      //在数据相等的情况下先计算所有数为正数
+      if (cormin > 0) {
+        //直接求出初始间隔
+        corstep = cormax / cornumber;
+      } else if (cormin < 0) {
+        //当所有数为负数且相等时
+        corstep = cormax / cornumber; //因为间隔为负影响下面的计算，所以直接取反
 
+        corstep = -corstep;
+      } //求间隔corstep的数量级temp (10,100,1000)
 
-      var temp;
 
       if (Math.pow(10, Math_trunc(Math.log(corstep) / Math.log(10))) == corstep) {
         temp = Math.pow(10, Math_trunc(Math.log(corstep) / Math.log(10)));
@@ -977,19 +985,16 @@
       cornumber = (cormax - cormin) / tmpstep;
     } else if (cormax != cormin) {
       //根据传入的数据初步求出刻度数之间的间隔corstep
-      var _corstep3 = (cormax - cormin) / cornumber; //求间隔corstep的数量级temp (10,100,1000)
+      corstep = (cormax - cormin) / cornumber; //求间隔corstep的数量级temp (10,100,1000)
 
-
-      var _temp;
-
-      if (Math.pow(10, Math_trunc(Math.log(_corstep3) / Math.log(10))) == _corstep3) {
-        _temp = Math.pow(10, Math_trunc(Math.log(_corstep3) / Math.log(10)));
+      if (Math.pow(10, Math_trunc(Math.log(corstep) / Math.log(10))) == corstep) {
+        temp = Math.pow(10, Math_trunc(Math.log(corstep) / Math.log(10)));
       } else {
-        _temp = Math.pow(10, Math_trunc(Math.log(_corstep3) / Math.log(10)) + 1);
+        temp = Math.pow(10, Math_trunc(Math.log(corstep) / Math.log(10)) + 1);
       } //将间隔corstep进行归一化，求出tmpstep(tpmstep在0.1 0.2 0.25 0.5 1之间取值)
 
 
-      tmpstep = _corstep3 / _temp;
+      tmpstep = corstep / temp;
 
       if (tmpstep >= 0 && tmpstep <= 0.1) {
         tmpstep = 0.1;
@@ -1004,7 +1009,7 @@
       } //将间隔恢复，求出实际间隔距离
 
 
-      tmpstep = tmpstep * _temp; //调整刻度尺的最小刻度
+      tmpstep = tmpstep * temp; //调整刻度尺的最小刻度
 
       if (Math_trunc(cormin / tmpstep) != cormin / tmpstep) {
         if (cormin < 0) {
@@ -2584,7 +2589,7 @@
         if (region) {
           var _loop2 = function _loop2(regionName) {
             var that = _this;
-            region[regionName](function (subName, data) {
+            region[regionName].call(that, function (subName, data) {
               // 如果传递了子区域名称
               if (arguments.length > 0) subName = subName + ""; // 如果没有传递
               else subName = "default";
@@ -2668,9 +2673,7 @@
         for (var i = 0; i < renderAOP.length; i++) {
           // 继承scope
           for (var scopeKey in pScope) {
-            if (!(scopeKey in renderAOP[i].scope)) {
-              renderAOP[i].scope[scopeKey] = pScope[scopeKey];
-            }
+            renderAOP[i].scope[scopeKey] = pScope[scopeKey];
           } // id可以采用默认的计算机制，也可以由用户自定义
 
 
@@ -2705,10 +2708,8 @@
 
             for (var forKey in data_for) {
               renderAOP[i].scope[cFor.value] = data_for[forKey];
-              if (cFor.key != null) renderAOP[i].scope[cFor.key] = isArray(data_for) ? +forKey : forKey; // 考虑到子组件会修改scope，目前没有好的方法恢复
-              // 后续找到更好的方法会替换这里
-
-              var temp = doit([JSON.parse(JSON.stringify(renderAOP[i]))], {}, isSubAttrs, id + "for" + forKey + "-", true);
+              if (cFor.key != null) renderAOP[i].scope[cFor.key] = isArray(data_for) ? +forKey : forKey;
+              var temp = doit([renderAOP[i]], {}, isSubAttrs, id + "for" + forKey + "-", true);
 
               if (isSubAttrs) {
                 for (var j = 0; j < temp.length; j++) {
@@ -2755,10 +2756,7 @@
 
               if (isSubAttrs) subRenderSeries.push(seriesItem);else renderSeries.push(seriesItem);
             }
-          } // 完成了恢复scope
-
-
-          renderAOP[i].scope = {};
+          }
         }
 
         return subRenderSeries;

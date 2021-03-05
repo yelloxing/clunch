@@ -4,25 +4,23 @@ let Math_trunc = function (value) {
 };
 
 // 刻度计算
-export default function ruler(cormax, cormin, cornumber) {
+export default function ruler(cormax, cormin, cornumber = 5) {
 
-    let tmpstep;
+    let tmpstep, corstep, temp;
 
-    cornumber = 5
     //先判断所有数据都相等的情况
     if (cormax == cormin) {
         //在数据相等的情况下先计算所有数为正数
         if (cormin > 0) {
             //直接求出初始间隔
-            let corstep = cormax / cornumber;
+            corstep = cormax / cornumber;
         } else if (cormin < 0) {
             //当所有数为负数且相等时
-            let corstep = cormax / cornumber;
+            corstep = cormax / cornumber;
             //因为间隔为负影响下面的计算，所以直接取反
             corstep = -corstep;
         }
         //求间隔corstep的数量级temp (10,100,1000)
-        let temp;
         if (
             Math.pow(10, Math_trunc(Math.log(corstep) / Math.log(10))) ==
             corstep
@@ -57,9 +55,8 @@ export default function ruler(cormax, cormin, cornumber) {
         cornumber = (cormax - cormin) / tmpstep;
     } else if (cormax != cormin) {
         //根据传入的数据初步求出刻度数之间的间隔corstep
-        let corstep = (cormax - cormin) / cornumber;
+        corstep = (cormax - cormin) / cornumber;
         //求间隔corstep的数量级temp (10,100,1000)
-        let temp;
         if (Math.pow(10, Math_trunc(Math.log(corstep) / Math.log(10))) == corstep) {
             temp = Math.pow(10, Math_trunc(Math.log(corstep) / Math.log(10)));
         } else {
