@@ -84,7 +84,7 @@
                                     <h5 @click='doScroll("simple-example-show1")' class='sub'>运行效果一</h5>
                                 </li>
                                 <li>
-                                    <h5 @click='doScroll("simple-example-filter")'>第四步：使用过滤器优化</h5>
+                                    <h5 @click='doScroll("simple-example-filter")'>第四步：三元表达式</h5>
                                 </li>
                                 <li>
                                     <h5 @click='doScroll("simple-example-show2")' class='sub'>运行效果二</h5>
