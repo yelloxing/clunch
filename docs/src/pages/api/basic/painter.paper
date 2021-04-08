@@ -6,19 +6,19 @@
         <h1 id="fixed-config">配置画笔</h1>
         <pre q-code>painter.config({
 
-    // 填充色或图案
+    // 填充色或图案，默认'black'
     "fillStyle":string,
 
-    // 轮廓色或图案
+    // 轮廓色或图案，默认'black'
     "strokeStyle":string,
 
-    // 线条宽度(单位px，下同)
-    "lineWidth":number
+    // 线条宽度(单位px，下同)默认1
+    "lineWidth":number,
 
-    // 文字水平对齐方式（"left"左对齐、"center"居中和"right"右对齐）
+    // 文字水平对齐方式（"left"左对齐、"center"居中和"right"右对齐）默认'left'
     "textAlign":string,
 
-    // 文字垂直对齐方式（"middle"垂直居中、"top"上对齐和"bottom"下对齐）
+    // 文字垂直对齐方式（"middle"垂直居中、"top"上对齐和"bottom"下对齐）默认'middle'
     "textBaseline":string,
 
     // 文字大小，默认16
@@ -27,14 +27,20 @@
     // 字体，默认"sans-serif"
     "font-family":string,
 
-    // 圆弧开始端闭合方式（"butt"直线闭合、"round"圆帽闭合）
+    // 圆弧开始端闭合方式（"butt"直线闭合、"round"圆帽闭合）默认'butt'
     "arc-start-cap":string,
 
-    // 圆弧结束端闭合方式，和上一个类似
+    // 圆弧结束端闭合方式，和上一个类似,默认'butt'
     "arc-end-cap":string,
 
-    // 设置线条虚线，应该是一个数组[number,...]
-    "lineDash":array
+    // 设置线条虚线，应该是一个数组[number,...]，默认[]
+    "lineDash":array,
+
+    // 阴影的模糊系数，默认0，也就是无阴影
+    "shadowBlur": 0,
+
+    // 阴影的颜色，默认'black'
+    "shadowColor": string
 
 });</pre>
         <p>

@@ -151,6 +151,8 @@ export default function (initRender, series) {
                     }
                     else if (attrKey == '_id') {
                         aopRender._id = render.attrs._id;
+                    } else if (attrKey == '_animation') {
+                        aopRender._animation = render.attrs._animation;
                     } else if (!(attrKey in curSeries.attrs)) {
                         console.warn("attrs." + attrKey + ' is not defined for ' + (pName ? pName + " > " + render.name : render.name) + '!');
                     }

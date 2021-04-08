@@ -1,11 +1,11 @@
 div.menu-view {
     overflow: hidden;
-    height: calc(100vh - .44rem);
+    height: calc(100vh - 1.41rem);
     white-space: nowrap;
 }
 
 div.menu-view>div {
-    height: calc(100vh - .44rem);
+    height: calc(100vh - 1.41rem);
     overflow: auto;
     display: inline-block;
     vertical-align: top;

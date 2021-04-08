@@ -1,4 +1,4 @@
-<template>
+<template id='root-view'>
     <article>
         <nav id="main-nav">
             <span title='提供更友好的数据可视化解决方案'>clunch.js</span>
@@ -34,6 +34,13 @@
             <component :is='page' />
         </div>
     </article>
+    <div class="footer">
+        Copyright © 2020-2021
+        <a href="https://hai2007.gitee.io/sweethome/" target="_blank">hai2007 走一步，再走一步。</a>
+        All rights reserved.
+        <br />
+        本项目由“你好2007”设计、开发和维护
+    </div>
 </template>
 
 <script>
@@ -130,5 +137,24 @@
         background-size: 90% auto;
         background-repeat: no-repeat;
         background-position: center center;
+    }
+
+    div.footer {
+        text-align: center;
+        background-color: #fafafa;
+        border-top: 1px solid #d3d0d0;
+        line-height: 2em;
+        padding: .2rem 0;
+        font-size: .14rem;
+    }
+
+    div.footer a {
+        padding: 0 .05rem;
+        text-decoration: underline;
+    }
+
+    div.footer a:hover {
+        font-weight: 800;
+        color:rgb(3, 132, 245);
     }
 </style>

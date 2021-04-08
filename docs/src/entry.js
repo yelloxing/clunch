@@ -21,6 +21,7 @@ QuickPaper.prototype.loadRouter = loadRouter; QuickPaper.prototype.goRouter = go
 
 // 引入指令
 import './directives/ui-active';
+import './directives/ui-goto-example';
 
 //根对象
 window.quickPaper = new QuickPaper({

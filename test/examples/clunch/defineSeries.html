@@ -44,6 +44,16 @@
                 },
                 link: function (painter, attr) {
 
+                    painter.config({
+                        // 'xxx':'非法的画笔配置'
+                    });
+
+                    // 测试阴影
+                    painter.config({
+                        "shadowBlur": 50,
+                        "shadowColor": "red"
+                    }).fillCircle(100, 100, 50);
+
                     // 复用圆形
                     this.$reuseSeriesLink('circle', {
                         attr: {

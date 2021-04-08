@@ -1,6 +1,7 @@
 import _painter from '../../painter/index';
 import getStyle from '../../../tool/get-style';
 import { position } from '../../../tool/event';
+import { initPainterConfig } from '../../painter/config';
 
 // 区域对象，用于存储区域信息,解决canvas交互问题
 
@@ -63,7 +64,7 @@ export default function (that) {
                 }
             }[p]();
 
-            painter.config({
+            painter.config(initPainterConfig).config({
                 fillStyle: regions[region_id],
                 strokeStyle: regions[region_id]
             });

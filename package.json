@@ -1,6 +1,6 @@
 {
   "name": "clunch",
-  "version": "1.4.4",
+  "version": "1.5.1",
   "description": "🎨 The Progressive JavaScript Interactive Picture Framework.",
   "main": "dist/clunch.min.js",
   "typings": "types/index.d.ts",
@@ -40,7 +40,7 @@
     "@babel/core": "^7.12.3",
     "@babel/preset-env": "^7.12.1",
     "@hai2007/nodejs": "^0.1.0",
-    "@hai2007/tool": "^0.6.2",
+    "@hai2007/tool": "^0.6.4",
     "@rollup/plugin-babel": "^5.2.1",
     "rollup": "^2.33.2",
     "rollup-plugin-commonjs": "^10.1.0",

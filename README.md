@@ -38,7 +38,7 @@ npm install --save clunch
 
 ```html
 <path>
-    <move-to x='250' y='100'></move-to>
+    <move-to x="125" y="50"></move-to>
     <line-to c-for='value in datalist' c-bind:x='value.x' c-bind:y='value.y'></line-to>
 </path>
 ```
@@ -47,7 +47,7 @@ npm install --save clunch
 
 ```html
 <!-- 特别注意：作为画布的宽高是必须设置的，当然，使用vm,rem等作为尺寸单位都可以，只是必须设置 -->
-<div id='root' style='width:700px;height:700px;'></div>
+<div id='root' style='width:350px;height:350px;'></div>
 ```
 
 最后，我们创建clunch对象启动绘图：
@@ -63,22 +63,23 @@ new Clunch({
     data() {
         return {
             datalist: [{
-                    x:  100,
-                    y: 40
+                    x: 50,
+                    y: 20
                 },
                 {
-                    x:  200,
-                    y: 400
+                    x: 100,
+                    y: 200
                 },
                 {
-                    x:  500,
-                    y: 500
-                }
-            ]
+                    x: 250,
+                    y: 250
+                }]
         };
     }
 });
 ```
+
+<a href='https://hai2007.gitee.io/sweethome/#/editor?file=clunch_readme' target="_blank">点击此处查看运行效果</a>
 
 从上面的例子可以看出来，我们采用的是数据驱动绘图，你需要通过业务来改变数据，绘制会自动完成，其次：
 

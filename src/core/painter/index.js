@@ -1,5 +1,6 @@
 import { initText, initArc, initCircle, initRect } from './config';
 import { linearGradient, radialGradient } from './Gradient';
+import { initPainterConfig } from './config';
 
 // 画笔对象，具体的绘制方法
 
@@ -22,16 +23,9 @@ export default function (canvas, width, height) {
     // 通过缩放实现模糊问题
     painter.scale(2, 2);
 
-    painter.textBaseline = 'middle';
-    painter.textAlign = 'left';
-
-    // 默认配置
-    let config = {
-        "font-size": "16", // 文字大小
-        "font-family": "sans-serif", // 字体
-        "arc-start-cap": "butt", // 弧开始闭合方式
-        "arc-end-cap": "butt" // 弧结束闭合方式
-    };
+    // 用于记录配置
+    // 因为部分配置的设置比较特殊，只先记录意图
+    let config = {};
 
     // 配置生效方法
     let useConfig = (key, value) => {
@@ -53,13 +47,18 @@ export default function (canvas, width, height) {
          */
 
         // 如果已经存在默认配置中，说明只需要缓存起来即可
-        else if (config[key]) {
+        else if (["font-size", "font-family", "arc-start-cap", "arc-end-cap"].indexOf(key) > -1) {
             config[key] = value;
         }
 
         // 其它情况直接生效即可
-        else {
+        else if (key in initPainterConfig) {
             painter[key] = value;
+        }
+
+        // 如果属性未被定义
+        else {
+            throw new Error('Illegal configuration item of painter : ' + key + " !");
         }
     };
 

@@ -18,10 +18,11 @@
 
     // 配置树图结构（可选）
     "type":LR|RL|BT|TB|circle,/*配置树图的类型（默认原始模型，会忽略下列全部设置）*/
-    "width",height:number,/*设置树图的宽和高（如果类型是LR|RL|BT|TB需要设置）*/
-    "cx","cy":number,/*设置圆心（如果类型是circle需要设置）*/
+    "width":number,"height":number,/*设置树图的宽和高（如果类型是LR|RL|BT|TB需要设置）*/
+    "cx":number,"cy":number,/*设置圆心（如果类型是circle需要设置）*/
     "radius":number,/*设置树图半径（如果类型是circle需要设置）*/
-    "begin-deg","deg":number/*开始和跨越弧度（可选，如果类型是circle设置该参数有效）*/
+    "begin-deg":number,"deg":number/*开始和跨越弧度（可选，如果类型是circle设置该参数有效）*/
+
 });</pre>
         <p>
             获取tree对象实例的时候需要传递
@@ -59,8 +60,8 @@
             </span>
         </h1>
         <pre q-code>var cardinal = $cardinal({
-    // 可选，设置张弛系数，默认1，分水岭0，值越大，曲线走势调整的越严重
-    rate:number
+    // 该参数用于调整曲线走势，默认数值t=0，分水岭t=-1，|t-(-1)|的值越大，曲线走势调整的越严重
+    "t": number
 });</pre>
         <p>
             <span class="important">插值函数</span>

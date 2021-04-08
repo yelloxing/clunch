@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>路径path | clunch.js内置组件</title>
+    <script src="https://cdn.jsdelivr.net/npm/clunch/dist/clunch-template.min.js"></script>
+</head>
+
+<body>
+    <div id="root" style='width:300px;height:300px;'>
+        <path>
+            <move-to x='50' y='50'></move-to>
+            <line-to x='50' y='250'></line-to>
+            <line-to x='250' y='250'></line-to>
+        </path>
+    </div>
+    <script>
+        new Clunch({
+            el: document.getElementById('root')
+        });
+    </script>
+</body>
+
+</html>

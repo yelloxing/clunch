@@ -25,6 +25,7 @@
             <li><span class="important">type</span>：string，弧形类型，默认'fill'，还有二种类型可选：'stroke'和'full';</li>
             <li><span class="important">begin</span>：number，弧度开始角度，默认0。</li>
         </ul>
+        <button ui-goto-example='arc'>查看用例>>></button>
         <h3 id="fixed-circle">
             圆
             <span class='sub-title'>
@@ -45,6 +46,7 @@
             <li><span class="important">dash</span>：array，线条类型，默认[]，表示实线；</li>
             <li><span class="important">type</span>：string，圆形类型，默认'fill'，还有二种类型可选：'stroke'和'full'。</li>
         </ul>
+        <button ui-goto-example='circle'>查看用例>>></button>
         <h3 id="fixed-path">
             路径
             <span class='sub-title'>
@@ -83,6 +85,7 @@
             <li><span class="important">type</span>：string，图形类型，默认'stroke'，还有二种类型可选：'full'和'fill'；</li>
             <li><span class="important">close</span>：boolean，是否闭合，默认false，不自动闭合。</li>
         </ul>
+        <button ui-goto-example='path'>查看用例>>></button>
         <h3 id="fixed-rect">
             矩形
             <span class='sub-title'>
@@ -105,6 +108,7 @@
             <li><span class="important">align</span>：string，水平对齐方式，默认'left'，还有二种类型可选：'center'和'right'；</li>
             <li><span class="important">baseline</span>：string，垂直对齐方式，默认'top'，还有二种类型可选：'middle'和'bottom'。</li>
         </ul>
+        <button ui-goto-example='rect'>查看用例>>></button>
         <h3 id="fixed-text">
             文字
             <span class='sub-title'>
@@ -130,6 +134,7 @@
             <li><span class="important">baseline</span>：string，文字垂直对齐方式，默认'middle'，还有二种类型可选：'top'和'bottom'；</li>
             <li><span class="important">deg</span>：number，文字旋转角度，默认0。</li>
         </ul>
+        <button ui-goto-example='text'>查看用例>>></button>
         <h1 id='fixed-combine'>复合组件</h1>
         <h3 id="fixed-ruler">
             直线刻度尺
@@ -150,6 +155,7 @@
             <li><span class="important">value-position</span>：string，刻度文字的位置，默认'mark'，表示文字和刻度对齐，还有一种可选：'between'；</li>
             <li><span class="important">color</span>：string，刻度尺颜色，默认'black'。</li>
         </ul>
+        <button ui-goto-example='ruler'>查看用例>>></button>
         <h3 id="fixed-polar-ruler">
             弧形刻度尺
             <span class='sub-title'>
@@ -170,6 +176,7 @@
             <li><span class="important">value-position</span>：string，刻度文字的位置，默认'mark'，表示文字和刻度对齐，还有一种可选：'between'；</li>
             <li><span class="important">color</span>：string，刻度尺颜色，默认'black'。</li>
         </ul>
+        <button ui-goto-example='polar-ruler'>查看用例>>></button>
     </div>
 </template>
 <script>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <title>clunch.js - 用例测试</title>
+    <script src="../../../dist/clunch-template.js"></script>
+    <link rel="shortcut icon" href="../../../clunch.png">
+    <style>
+        body {
+            margin: 0;
+        }
+
+        #root {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="root">
+
+        <group c-for="(value,index) in values">
+
+            <!-- 背景灰色 -->
+            <rect :x="( _width - 100 ) / values.length * ( index + 0.1 ) + 50" :y="_height - 50"
+                :width="( _width - 100 ) / values.length * 0.8" :height="-1 * ( _height - 100 )"
+                fill-color="rgba(220, 220, 220, 0.8)" type="fill"></rect>
+
+            <!-- 值红色 -->
+            <rect :x="( _width - 100 ) / values.length * ( index + 0.1 ) + 50" :y="_height - 50"
+                :width="( _width - 100 ) / values.length * 0.8" :height="-0.005 * value * ( _height - 100 )"
+                fill-color="red" type="fill"></rect>
+
+        </group>
+
+        <!-- 横坐标 -->
+        <ruler x="50" :y="_height - 50" :length="_width - 100" :value="ruler" value-position="between"></ruler>
+
+        <text :x="x" :y="y" c-if='flag' :_animation='animation' c-bind:_id='id'>
+            悬浮提示内容
+        </text>
+
+    </div>
+
+    <script>
+
+        window.clunch = new Clunch({
+            el: document.getElementById('root'),
+            data: function () {
+                return {
+                    id: "text-id",
+                    animation: "quick",
+                    values: [120, 200, 150, 80, 70, 110, 130],
+                    ruler: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+                    x: 0,
+                    y: 0,
+                    flag: false
+                };
+            }
+        }).$bind('mousemove', function (target) {
+            if (target.series == 'rect') {
+                this.x = target.left;
+                this.y = target.top;
+                this.flag = true;
+            } else {
+                this.flag = false;
+            }
+        });
+
+
+    </script>
+
+</body>
+
+</html>

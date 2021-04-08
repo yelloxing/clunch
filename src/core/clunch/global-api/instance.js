@@ -1,8 +1,15 @@
+
+import { initPainterConfig } from '../../painter/config';
+
 export function initGlobal(Clunch) {
 
     // 组件图形复用
     Clunch.prototype.$reuseSeriesLink = function (seriesName, _attrs) {
 
+        // 画笔配置重置，防止副作用
+        this.__painter.config(initPainterConfig);
+
+        // 获取需要复用的组件实体
         let reuseSeries = this.__defineSerirs[seriesName];
 
         let attrs = {

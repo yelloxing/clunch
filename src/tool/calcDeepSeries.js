@@ -116,6 +116,15 @@ export default function (oldRenderSeries, newRenderSeries) {
                 });
 
             }
+
+            // 如果在旧的组件列表里面不存在对照
+            else {
+
+                if (newRenderSeries[i].animation == 'quick') {
+                    renderSeries.push(newRenderSeries[i]);
+                }
+
+            }
         }
 
         return renderSeries;

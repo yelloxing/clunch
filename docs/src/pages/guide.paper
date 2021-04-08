@@ -51,7 +51,9 @@
                 除了上面提到的，我们还进行了一系列的优化，请在使用中感受。
                 初识clunch.js，可以先通过
                 <a href="#/course/introduce?fixed=top" target="_blank">教程</a>
-                来了解基本的代码，学习整个绘图的基本流程。
+                来了解基本的代码，学习整个绘图的基本流程。也可以
+                <a href='https://github.com/clunch-contrib' target="_blank">访问组织</a>
+                获得更多交流。
             </p>
             <p class='logo'>
                 <h3>探索clunch.js的使用</h3>
@@ -70,13 +72,6 @@
                 <a href="https://github.com/hai2007/clunch" target="_blank">issue</a>
                 告诉我们，包括一些好的建议！
             </p>
-        </div>
-        <div class="footer">
-            Copyright © 2020-2021
-            <a href="https://hai2007.gitee.io/sweethome/" target="_blank">hai2007 走一步，再走一步。</a>
-            All rights reserved.
-            <br />
-            本项目由“你好2007”设计、开发和维护
         </div>
     </div>
 </template>
@@ -122,19 +117,6 @@
     div.root>div.help a {
         color: red;
         font-weight: 800;
-        padding: 0 .05rem;
-    }
-
-    div.root>div.footer {
-        text-align: center;
-        background-color: #fafafa;
-        border-top: 1px solid #d3d0d0;
-        line-height: 2em;
-        padding: .2rem 0;
-        font-size: .14rem;
-    }
-
-    div.root>div.footer a {
         padding: 0 .05rem;
     }
 

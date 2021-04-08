@@ -17,6 +17,10 @@ module.exports = {
     },
     module: {
         rules: [{
+            test: /\.html$/,
+            exclude: /node_modules/,
+            loader: ['./build/examples-html-loader.js']
+        }, {
             test: /\.clunch$/,
             exclude: /node_modules/,
             loader: ['../loader.js']

@@ -4,6 +4,7 @@ import { isFunction, isArray, isNumber } from '@hai2007/tool/type';
 import calcDeepSeries from '../../../tool/calcDeepSeries';
 import painter from '../../painter/index';
 import getStyle from '../../../tool/get-style';
+import { initPainterConfig } from '../../painter/config';
 
 // 数据更新或画布改变需要进行的更新处理方法
 
@@ -50,6 +51,7 @@ export function updateMixin(Clunch) {
             }
 
             // 绘制
+            this.__painter.config(initPainterConfig);
             this.__defineSerirs[this.__renderSeries[i].name].link.call(this, this.__painter, attr);
 
             // 记录区域
@@ -154,6 +156,14 @@ export function updateMixin(Clunch) {
                     id = pid + renderAOP[i].index;
                 }
 
+                // _animation用于设置组件参与动画的方式
+                let animationHow;
+                if ('_animation' in renderAOP[i]) {
+                    animationHow = renderAOP[i]._animation.isBind ? evalExpress(that, renderAOP[i]._animation.express, renderAOP[i].scope) : renderAOP[i]._animation.express;
+                } else {
+                    animationHow = 'lazy';
+                }
+
                 // c-for指令
                 // 由于此指令修改局部scope，因此优先级必须最高
                 if (!ignoreFor && 'c-for' in renderAOP[i]) {
@@ -209,7 +219,8 @@ export function updateMixin(Clunch) {
                             attr: {},
                             subAttr: [],
                             subText: renderAOP[i].text,
-                            id
+                            id,
+                            animation: animationHow
                         };
 
                         // 计算属性

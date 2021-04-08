@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>刻度尺ruler | clunch.js内置组件</title>
+    <script src="https://cdn.jsdelivr.net/npm/clunch/dist/clunch-template.min.js"></script>
+</head>
+
+<body>
+    <div id="root" style='width:500px;height:300px;'>
+        <ruler x='50' y='150' length='400' :value='ruler'></ruler>
+    </div>
+    <script>
+        new Clunch({
+            el: document.getElementById('root'),
+            data: function () {
+                return {
+                    ruler: ["第一季度", "第二季度", "第三季度", "第四季度"]
+                };
+            }
+        });
+    </script>
+</body>
+
+</html>

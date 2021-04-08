@@ -1,4 +1,5 @@
 import { option } from "./option";
+import { reuseSeriesOptions } from "./define-object/reuseSeriesOptions";
 
 declare class Clunch {
 
@@ -30,6 +31,11 @@ declare class Clunch {
     * 绑定事件
     */
     $bind(eventName: string, callback: Function): this;
+
+    /**
+     * 图形复用
+     */
+    $reuseSeriesLink(seriesName: string, options: reuseSeriesOptions): this;
 
     /**
      * 挂载的新图形
