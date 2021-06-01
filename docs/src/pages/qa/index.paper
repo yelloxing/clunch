@@ -1,0 +1,233 @@
+<template>
+    <div class='qa-view doc-view' id='fixed-top'>
+        <div class="toTop" @click='doScroll("top")'>
+            回到顶部
+        </div>
+        <div class='doc-view content'>
+            <h1>
+                常见问题
+            </h1>
+            <p>
+                下面收集的问题主要来自日常开发和
+                <a href="https://github.com/hai2007/clunch/issues" target="_blank">issue</a>
+                ，如果下面的清单无法解决你的问题，可以去
+                <a href="https://github.com/hai2007/clunch/issues" target="_blank">issue</a>
+                中提问，获得认可的通用问题会被加入到下面。
+            </p>
+
+            <!-- 菜单 -->
+
+            <div class='menu-view'>
+                <div>
+                    <h2 @click='doScroll("qa")'>一、使用中遇到的问题或疑惑</h2>
+                    <ul>
+                        <li>
+                            <h3 active="yes" @click='doScroll("qa-data")'>数据改变是否会立刻触发页面刷新？</h3>
+                        </li>
+                        <li>
+                            <h3 active="yes" @click='doScroll("qa-resize")'>持续改变页面大小会怎么样？</h3>
+                        </li>
+                        <li>
+                            <h3 active="yes" @click='doScroll("qa-browser")'>浏览器兼容问题</h3>
+                            <ul>
+                                <li>
+                                    <h4 @click='doScroll("qa-browser-ie")'>IE浏览器</h4>
+                                    <ul>
+                                        <li>
+                                            <h5 @click='doScroll("qa-browser-ie-resize")'>为什么缩放屏幕的时候画布无法自适应更新大小？</h5>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <h2 @click='doScroll("skill")'>二、一些有用的技巧说明</h2>
+                    <ul>
+                        <li>
+                            <h3 active="yes" @click='doScroll("skill-hover")'>如何更好的添加悬浮提示？</h3>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 内容 -->
+
+            <h2 id='fixed-qa' @click='doScroll("qa")'>一、使用中遇到的问题或疑惑</h2>
+            <p>
+                这部分主要是对一些使用者可能感觉奇怪的现象进行解释并说明如此设计的原因，同时包括对一些可能触发的
+                <span class="warn">bug</span>
+                的说明。
+            </p>
+
+            <h3 id='fixed-qa-data' @click='doScroll("qa-data")'>数据改变是否会立刻触发页面刷新？</h3>
+            <p>
+                从结果来说，数据改变的确会立刻触发数据改变。那么，如果我们有类似如下的语句：
+            </p>
+            <pre q-code>
+this.radius = 10;
+this.radius = 20;
+this.radius = 30;
+            </pre>
+            <p>
+                你可能认为画笔会更新至少三次，而实际情况是，只刷新了一次。因此，你在改变数据的时候，无需过多的考虑刷新的问题，框架内部会在保证"立刻刷新"的情况下自动减小刷新频率。
+            </p>
+            <p>
+                不过，框架并不是总能监听到数据改变，比如下面的语句：
+            </p>
+            <pre q-code>
+// radiusArray是一个数组
+this.radiusArray[0]= 10;
+            </pre>
+            <p>
+                由于我们目前没有进行深层次监听，也没有修改对象上的方法来加强数据监听，因此所有类似上面的语句监听都会失效。
+            </p>
+            <p class="warn">
+                温馨提示：根据使用者的反馈，如果在未来某一天发现深度监听等是有必要的，我们会考虑添加这些功能，同时会同步这里的说明。
+            </p>
+
+            <h3 id='fixed-qa-resize' @click='doScroll("qa-resize")'>持续改变页面大小会怎么样？</h3>
+            <p>
+                为了减少不必要的刷新，如果用户在很短的时间里不停的缩放浏览器导致画布的大小持续改变，我们不会立刻刷新画布，而是在用户停止缩放的时候刷新画布。
+            </p>
+
+            <h3 id='fixed-qa-browser' @click='doScroll("qa-browser")'>浏览器兼容问题</h3>
+            <p>
+                为了减小打包的体积，对于非必要的
+                <span class="warn">Polyfill文件</span>
+                我们没有进行内置，下面特别进行说明。当然，也包括一些别的浏览器相关的兼容问题。
+            </p>
+
+            <h4 id='fixed-qa-browser-ie' @click='doScroll("qa-browser-ie")'>IE浏览器</h4>
+            <p>
+                需要说明的是，对于IE浏览器，我们是从IE9+（包括9）开始支持的，请特别注意。
+            </p>
+
+            <h5 id='fixed-qa-browser-ie-resize' @click='doScroll("qa-browser-ie-resize")'>为什么缩放屏幕的时候画布无法自适应更新大小？</h5>
+            <p>
+                监听画布大小改变我们使用的是
+                <span class="warn">
+                    ResizeObserver
+                </span>
+                对象实现的，由于IE浏览器不支持，因此，你需要引入对应的polyfill进行兼容。
+            </p>
+            <p>
+                如果你知道画布合适改变大小，也可以通过
+                <a href="#/api?fixed=resize" target="_blank">主动通知</a>
+                的方式进行兼容。
+            </p>
+
+            <h2 id='fixed-skill' @click='doScroll("skill")'>二、一些有用的技巧说明</h2>
+
+            <h3 id='fixed-skill-hover' @click='doScroll("skill-hover")'>如何更好的添加悬浮提示？</h3>
+            <p>
+                假设我们现在根据数据绘制了若干个矩形条目，你可以
+                <button ui-goto-example='hover'>点击此处查看用例>>></button>
+                ，鼠标悬浮在对应的矩形条目上会悬浮提示对应条目的数值（具体的悬浮可以自定义更好看的组件，这里只是为了说明问题就用文字代替）。
+            </p>
+            <p>
+                你会发现，鼠标需要停留一段时间才可以触发悬浮提示，这非常的不友好！
+            </p>
+            <p>
+                对于悬浮的场景，发生这样的结果并不是我们期望的，不过为了兼容大多数情况，我们不得已这样设计。幸运的是，我们提供了配置项来修改默认的动画机制：
+                <a href="#/api/series?fixed=inner-attr" target="_blank">内置属性 / _animation</a>
+                ，通过把这个配置项设置为
+                <span class="warn">
+                    quick
+                </span>
+                就可以获得更好的悬浮效果：
+                <button ui-goto-example='hover-enhance'>点击此处查看用例>>></button>
+                。
+            </p>
+        </div>
+    </div>
+</template>
+<script>
+    import changeActive from '../../Service/changeActive.js';
+    import fixedScroll from '../../Service/fixedScroll.js';
+    export default {
+        created() {
+            changeActive('menu-1', 'qa');
+        },
+        mounted() {
+            fixedScroll(document.getElementById('fixed-top'), -40);
+        },
+        methods: {
+            doScroll(fixedName) {
+                window.location.href = (window.location.href + "").replace(/\?fixed=.*$/, '') + "?fixed=" + fixedName;
+                fixedScroll(document.getElementById('fixed-top'), -40);
+            }
+        }
+    };
+
+</script>
+<style>
+    .qa-view {
+        height: calc(100vh - 0.44rem);
+        overflow: auto;
+        padding: 50px 100px;
+        background-color: rgb(236, 232, 232);
+    }
+
+    .doc-view {
+        width: 100%;
+    }
+
+    .menu-view,
+    .menu-view>div {
+        height: auto !important;
+    }
+
+    .content {
+        background-color: white;
+        padding: 30px;
+    }
+
+    .toTop {
+        position: fixed;
+        width: 50px;
+        height: 40px;
+        background-image: url('../../assets/toTop.png');
+        background-position: center;
+        background-size: auto 100%;
+        background-repeat: no-repeat;
+        right: 30px;
+        bottom: 130px;
+        font-size: 0;
+        cursor: pointer;
+    }
+
+    div.menu-view>div:first-child h3[active='yes'],
+    h2,
+    h3,
+    h4,
+    h5 {
+        cursor: pointer;
+        font-weight: 400;
+        border-bottom: none !important;
+        color: #242729;
+        padding-left: 0;
+    }
+
+    h2 {
+        font-size: 20px;
+        font-weight: 800;
+        color: #000000;
+    }
+
+    div.menu-view>div:first-child h3[active='yes']:hover,
+    h2:hover,
+    h3:hover,
+    h4:hover,
+    h5:hover {
+        color: #2396b9 !important;
+        font-weight: 800 !important;
+        text-decoration: underline;
+    }
+
+    button {
+        margin: 0 !important;
+        background: none !important;
+        color: blue !important;
+        text-decoration: underline;
+    }
+</style>

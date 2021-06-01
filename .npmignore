@@ -4,8 +4,7 @@
 node_modules
 .vscode
 docs
-src
 test
 .editorconfig
-cuf.config.js
+hai2007_nodejs.config.js
 rollup.config.js

@@ -26,4 +26,6 @@ export default function (element, overValue) {
         element.scrollTop = 0;
     }
 
+    document.getElementById('root-view').scrollTop=0;
+
 };

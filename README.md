@@ -14,6 +14,8 @@
 
 - 你可以查看[在线文档](https://hai2007.gitee.io/clunch/)学习或查看文档进行使用！
 
+- 我们支持H5和uni-app（web、微信小程序和支付宝小程序等）等各种跨端开发，一套代码，多端运行！
+
 ## Issues
 使用的时候遇到任何问题或有好的建议，请点击进入[issue](https://github.com/hai2007/clunch/issues)，欢迎参与维护！
 

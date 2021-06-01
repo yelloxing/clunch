@@ -189,12 +189,12 @@
             把当前路径画上轮廓线并填充颜色到当前路径所包裹的区域：
         </p>
         <pre q-code>painter.full();</pre>
-        <p>
-            把图像、画布或视频绘制到画布的指定位置上：
-        </p>
         <h3 id="fixed-image">
             图片
         </h3>
+        <p>
+            把图像、画布或视频绘制到画布的指定位置上：
+        </p>
         <pre q-code>painter.drawImage();</pre>
         <ul>
             <li>(img, x, y):在画布上定位图像。</li>

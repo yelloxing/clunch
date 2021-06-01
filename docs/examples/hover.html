@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>悬浮提示演示 | 常见问题</title>
+    <script src="https://cdn.jsdelivr.net/npm/clunch/dist/clunch-template.js"></script>
+</head>
+
+<body>
+    <div id="root" style='width:300px;height:300px;'>
+
+        <!-- 矩形 -->
+        <rect c-for='(value,index) in values' fill-color='red' :x='_width*(index*0.2+0.1)' y='0' :width='_width*0.2'
+            :height='value/50*_height' :_id="index" align='center' type='full'></rect>
+
+        <!-- 悬浮文字提示 -->
+        <text :x='hover.x' :y='hover.y' :content='hover.info' c-if='flag' _id='hover-text'
+            :align="hover.x>_width*0.5?'right':'left'"></text>
+
+    </div>
+    <script>
+        new Clunch({
+            el: document.getElementById('root'),
+            data: function () {
+                return {
+                    values: [10, 43, 47, 33, 31],
+                    flag: false,
+                    hover: {}
+                };
+            }
+        }).$bind('mousemove', function (target) {
+
+            if (target.series == 'rect') {
+                this.hover = {
+                    x: target.left,
+                    y: target.top,
+                    info: "值为:" + this.values[target.id]
+                };
+                this.flag = true;
+            } else {
+                this.flag = false;
+            }
+
+        });
+    </script>
+</body>
+
+</html>

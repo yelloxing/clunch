@@ -4,12 +4,12 @@
  *
  * author 你好2007 < https://hai2007.gitee.io/sweethome >
  *
- * version 1.5.1
+ * version 1.6.0
  *
  * Copyright (c) 2020-2021 hai2007 走一步，再走一步。
  * Released under the MIT license
  *
- * Date:Sun Apr 04 2021 22:59:59 GMT+0800 (GMT+08:00)
+ * Date:Mon May 24 2021 09:43:31 GMT+0800 (GMT+08:00)
  */
 (function () {
   'use strict';
@@ -1395,11 +1395,17 @@
     "shadowColor": "black"
   }; // 文字统一设置方法
 
-  var initText = function initText(painter, config, x, y, deg) {
+  var initText = function initText(painter, config, x, y, deg, platform) {
     painter.beginPath();
     painter.translate(x, y);
     painter.rotate(deg);
-    painter.font = config['font-size'] + "px " + config['font-family'];
+
+    if (platform != 'default') {
+      painter.setFontSize(config['font-size']); // font-family目前无视了
+    } else {
+      painter.font = config['font-size'] + "px " + config['font-family'];
+    }
+
     return painter;
   }; // 画弧统一设置方法
 
@@ -1477,24 +1483,57 @@
     return enhanceGradient;
   };
 
-  function painter (canvas, width, height) {
-    // 获取canvas2D画笔
-    var painter = canvas.getContext("2d"); //  如果画布隐藏或大小为0
+  var unSupportAttr = {};
+  function painter (platform, canvas, width, height) {
+    var painter;
 
-    if (width == 0 || height == 0) throw new Error('Canvas is hidden or size is zero!'); // 设置显示大小
+    if (platform != 'default') {
+      // 非默认环境的画笔由外界提供
+      painter = canvas.painter;
+    } else {
+      // 获取canvas2D画笔
+      painter = canvas.getContext("2d"); //  如果画布隐藏或大小为0
+      // 对于这种情况，修改为直接在前置拦截
+      // by 你好2007 (2021年4月29日)
+      // if (width == 0 || height == 0) throw new Error('Canvas is hidden or size is zero!');
+      // 设置显示大小
 
-    canvas.style.width = width + "px";
-    canvas.style.height = height + "px"; // 设置画布大小（画布大小设置为显示的二倍，使得显示的时候更加清晰）
+      canvas.style.width = width + "px";
+      canvas.style.height = height + "px"; // 设置画布大小（画布大小设置为显示的二倍，使得显示的时候更加清晰）
 
-    canvas.setAttribute('width', width * 2);
-    canvas.setAttribute('height', height * 2); // 通过缩放实现模糊问题
+      canvas.setAttribute('width', width * 2);
+      canvas.setAttribute('height', height * 2); // 通过缩放实现模糊问题
 
-    painter.scale(2, 2); // 用于记录配置
+      painter.scale(2, 2);
+    } // 用于记录配置
     // 因为部分配置的设置比较特殊，只先记录意图
+
 
     var config = {}; // 配置生效方法
 
-    var useConfig = function useConfig(key, value) {
+    var useConfig = platform != 'default' ? // 当前除了默认环境就是uni-app，后续如果有新增可以再调整
+    function (key, value) {
+      // 如果已经存在默认配置中，说明只需要缓存起来即可
+      if (["font-size", "font-family", "arc-start-cap", "arc-end-cap"].indexOf(key) > -1) {
+        config[key] = value;
+      } else {
+        try {
+          painter['set' + key[0].toUpperCase() + key.substr(1)](value);
+        } catch (e) {
+          if (!unSupportAttr[platform]) {
+            unSupportAttr[platform] = {};
+          } // 为了友好，我们只对第一次进行提示
+
+
+          if (!unSupportAttr[platform][key]) {
+            // 部分属性可能一些平台设置方法不兼容，这里进行调试提示
+            unSupportAttr[platform][key] = true;
+            console.warn("Clunch内置画笔的" + key + "属性在" + platform + "平台上不支持！");
+          }
+        }
+      }
+    } : // 默认环境
+    function (key, value) {
       /**
        * -----------------------------
        * 特殊的设置开始
@@ -1520,7 +1559,6 @@
             }
     }; // 画笔
 
-
     var enhancePainter = {
       // 属性设置或获取
       "config": function config() {
@@ -1539,19 +1577,19 @@
       // 文字
       "fillText": function fillText(text, x, y, deg) {
         painter.save();
-        initText(painter, config, x, y, deg || 0).fillText(text, 0, 0);
+        initText(painter, config, x, y, deg || 0, platform).fillText(text, 0, 0);
         painter.restore();
         return enhancePainter;
       },
       "strokeText": function strokeText(text, x, y, deg) {
         painter.save();
-        initText(painter, config, x, y, deg || 0).strokeText(text, 0, 0);
+        initText(painter, config, x, y, deg || 0, platform).strokeText(text, 0, 0);
         painter.restore();
         return enhancePainter;
       },
       "fullText": function fullText(text, x, y, deg) {
         painter.save();
-        initText(painter, config, x, y, deg || 0);
+        initText(painter, config, x, y, deg || 0, platform);
         painter.fillText(text, 0, 0);
         painter.strokeText(text, 0, 0);
         painter.restore();
@@ -1714,7 +1752,12 @@
   } // 获取鼠标相对特定元素左上角位置
 
   var position = function position(target, event) {
-    // 返回元素的大小及其相对于视口的位置
+    // 如果给的直接是数据，返回即可
+    if (event.type == 'result') return {
+      x: event.position.left,
+      y: event.position.top
+    }; // 返回元素的大小及其相对于视口的位置
+
     var bounding = target.getBoundingClientRect();
     return {
       // 鼠标相对元素位置 = 鼠标相对窗口坐标 - 元素相对窗口坐标
@@ -1723,7 +1766,9 @@
     };
   };
 
-  function region (that) {
+  function region (that, el) {
+    var _width = 1,
+        _height = 1;
     var regions = {},
         //区域映射表
     rgb = [0, 0, 0],
@@ -1731,28 +1776,43 @@
     p = 'r'; //色彩增值位置
     // 用于计算包含关系的画板
 
-    var canvas = document.createElement('canvas');
+    var canvas, _painter2;
 
-    var _painter2 = painter(canvas, 1, 1);
+    if (that._platform == 'default') {
+      canvas = document.createElement('canvas');
+      _painter2 = painter(that._platform, canvas, 1, 1);
+    } else {
+      canvas = el.region;
+      _painter2 = painter(that._platform, {
+        painter: el.region
+      }, el.width, el.height);
+      _width = el.width;
+      _height = el.height;
+    }
 
-    var _width = 1,
-        _height = 1;
-    var regions_data = {};
     return {
+      // 非默认平台的draw方法
+      "draw": function draw() {
+        canvas.draw();
+      },
       // 擦除
       "erase": function erase() {
         _painter2.config({
           fillStyle: 'rgb(255,255,255)'
-        }).fillRect(0, 0, _width, _height); // 清空记录的数据
-
-
-        regions_data = {};
+        }).fillRect(0, 0, _width, _height);
       },
       // 更新大小
       "updateSize": function updateSize(width, height) {
         _width = width;
         _height = height;
-        _painter2 = painter(canvas, width, height);
+
+        if (that._platform == 'default') {
+          _painter2 = painter(that._platform, canvas, width, height);
+        } else {
+          _painter2 = painter(that._platform, {
+            painter: el.region
+          }, width, height);
+        }
       },
       // 绘制（添加）区域范围
 
@@ -1781,27 +1841,49 @@
         _painter2.config(initPainterConfig).config({
           fillStyle: regions[region_id],
           strokeStyle: regions[region_id]
-        }); // 记录数据
+        });
 
-
-        regions_data[region_id] = data;
         return _painter2;
       },
       // 获取此刻鼠标所在区域
-      "getRegion": function getRegion(event) {
-        var pos = position(that.__canvas, event);
-        pos.x -= getStyle(that.__canvas, 'border-left-width').replace('px', '');
-        pos.y -= getStyle(that.__canvas, 'border-top-width').replace('px', '');
-        var currentRGBA = canvas.getContext("2d").getImageData(pos.x * 2 - 0.5, pos.y * 2 - 0.5, 1, 1).data;
+      "getRegion": function getRegion(event, doback) {
+        var pos = position(that.__canvas, event),
+            currentRGBA;
 
-        for (var i in regions) {
-          if ("rgb(" + currentRGBA[0] + "," + currentRGBA[1] + "," + currentRGBA[2] + ")" == regions[i]) {
-            return [i, pos.x, pos.y, regions_data[i]];
-          }
-        } // 说明当前不在任何区域
+        var doSearch = function doSearch() {
+          // 查找当前点击的区域
+          for (var i in regions) {
+            if ("rgb(" + currentRGBA[0] + "," + currentRGBA[1] + "," + currentRGBA[2] + ")" == regions[i]) {
+              doback([i, pos.x, pos.y]);
+              return;
+            }
+          } // 说明当前不在任何区域
 
 
-        return [null, pos.x, pos.y, null];
+          doback([null, pos.x, pos.y]);
+        };
+
+        if (that._platform == 'default') {
+          pos.x -= getStyle(that.__canvas, 'border-left-width').replace('px', '');
+          pos.y -= getStyle(that.__canvas, 'border-top-width').replace('px', '');
+          currentRGBA = canvas.getContext("2d").getImageData(pos.x * 2 - 0.5, pos.y * 2 - 0.5, 1, 1).data;
+          doSearch();
+        } else {
+          that.__options.el.getRegionColor({
+            x: pos.x - 0.5,
+            y: pos.y - 0.5,
+            width: 1,
+            height: 1,
+            canvasId: that.__options.el.regionid,
+            success: function success(res) {
+              currentRGBA = res.data;
+              doSearch();
+            },
+            fail: function fail(error) {
+              throw new Error(error);
+            }
+          });
+        }
       }
     };
   }
@@ -1809,7 +1891,11 @@
   function initMixin(Clunch) {
     // 对对象进行初始化
     Clunch.prototype.$$init = function (options) {
-      this.__options = options; // 需要双向绑定的数据
+      var _this = this;
+
+      this.__options = options; // 记录平台
+
+      this._platform = "platform" in options ? options.platform : "default"; // 需要双向绑定的数据
 
       this.__data = isArray(options.data) ? serviceFactory(options.data) : isFunction(options.data) ? options.data() : options.data; // 数据改变是否需要过渡动画
 
@@ -1869,7 +1955,30 @@
       this._min = 0;
       this._max = 0; // 区域管理者
 
-      this.__regionManager = region(this);
+      if (this._platform == 'default') {
+        this.__regionManager = region(this);
+      } else {
+        this.__regionManager = region(this, options.el);
+      } // 事件处理兼容改造
+      // 主要是用于无法直接通过DOM主动绑定的环境
+
+
+      this.$$trigger = function (eventName, eventParam) {
+        /**
+        * eventParam={
+        *      left:number,
+        *      top:number
+        * };
+        */
+        var events = _this.__events_platform[eventName];
+
+        for (var i = 0; i < events.length; i++) {
+          events[i]({
+            type: 'result',
+            position: eventParam
+          });
+        }
+      };
     };
   }
 
@@ -2667,6 +2776,15 @@
 
       for (var i = 0; i < this.__renderSeries.length; i++) {
         _loop(i);
+      } // 对于非默认平台，最后需要绘制一下才会显示
+
+
+      if (this._platform != 'default') {
+        this.__platform_painter.draw();
+
+        if (this.__regionManager != null) {
+          this.__regionManager.draw();
+        }
       }
 
       this.$$lifecycle('drawed');
@@ -2678,13 +2796,23 @@
 
       this.$$lifecycle('beforeResize');
       var width = this.__el.clientWidth - (getStyle(this.__el, 'padding-left') + "").replace('px', '') - (getStyle(this.__el, 'padding-right') + "").replace('px', '');
-      var height = this.__el.clientHeight - (getStyle(this.__el, 'padding-top') + "").replace('px', '') - (getStyle(this.__el, 'padding-bottom') + "").replace('px', ''); // 更新画布
-
-      this.__painter = painter(this.__canvas, width, height);
+      var height = this.__el.clientHeight - (getStyle(this.__el, 'padding-top') + "").replace('px', '') - (getStyle(this.__el, 'padding-bottom') + "").replace('px', '');
       this._width = width;
       this._height = height;
       this._max = width > height ? width : height;
-      this._min = width < height ? width : height; // 重置区域
+      this._min = width < height ? width : height;
+
+      if (width == 0 || height == 0) {
+        // 画布大小标记为0
+        this.__canvas.style.width = "0px";
+        this.__canvas.style.height = "0px"; // 提前结束更新
+
+        this.$$lifecycle('resized');
+        return;
+      } // 更新画布
+
+
+      this.__painter = painter(this._platform, this.__canvas, width, height); // 重置区域
 
       this.__regionManager.updateSize(width, height);
 
@@ -3088,7 +3216,7 @@
       return;
     }
 
-    if (!isElement(el)) {
+    if (this._platform == 'default' && !isElement(el)) {
       // 如果挂载结点不正确，自然不能挂载
       console.warn('Mount node does not exist!');
       return this;
@@ -3103,35 +3231,91 @@
     } // 一切正确以后，记录新的挂载结点
 
 
-    this.__el = el; // 初始化添加画布
+    this.__el = el; // 默认是web平台
 
-    el.innerHTML = '<canvas>非常抱歉，您的浏览器不支持canvas!</canvas>';
-    this.__canvas = el.getElementsByTagName('canvas')[0]; // 挂载后以后，启动画布大小监听
+    if (this._platform == 'default') {
+      // 初始化添加画布
+      el.innerHTML = '<canvas>非常抱歉，您的浏览器不支持canvas!</canvas>';
+      this.__canvas = el.getElementsByTagName('canvas')[0]; // 挂载后以后，启动画布大小监听
 
-    resize(this); // 触发数据改变更新
+      resize(this);
+    } // 否则就是非web平台，需要特殊处理
+    else {
+        this.__painter = painter(this._platform, el, el.width, el.height);
+        this.__platform_painter = el.painter;
+        this.$resize(el.width, el.height);
+      } // 触发数据改变更新
 
-    this.$$updateWithData(); // 添加区域交互
+
+    this.$$updateWithData(); // 记录事件
+
+    this.__events_platform = {
+      "click": [],
+      "dblclick": [],
+      "mousemove": [],
+      "mousedown": [],
+      "mouseup": []
+    }; // 添加区域交互
 
     ['click', 'dblclick', 'mousemove', 'mousedown', 'mouseup'].forEach(function (eventName) {
-      bind(_this.__canvas, eventName, function (event) {
-        var region = _this.__regionManager.getRegion(event);
+      var eventHandler = function eventHandler(event) {
+        _this.__regionManager.getRegion(event, function (region) {
+          if (region[0] != null) {
+            var regionSplit = region[0].split('::');
+            var doback = _this.__events[eventName][regionSplit[0]];
 
-        if (region[0] != null) {
-          var regionSplit = region[0].split('::');
-          var doback = _this.__events[eventName][regionSplit[0]];
+            if (isFunction(doback)) {
+              var regionNameSplit = regionSplit[0].split('@');
+              var curSeires = _this.__renderSeries[regionNameSplit[0]]; // 整理属性信息
 
-          if (isFunction(doback)) {
+              var attr = {};
+
+              for (var attrKey in curSeires.attr) {
+                attr[attrKey] = curSeires.attr[attrKey].value;
+              } // 调用回调
+
+
+              doback.call(_this, {
+                id: curSeires.id,
+                series: curSeires.name,
+                region: regionNameSplit[1],
+                subRegion: regionSplit[1],
+                attr: attr,
+                left: region[1],
+                top: region[2],
+                data: region[3]
+              });
+            }
+          }
+        });
+      };
+
+      if (_this._platform == 'default') {
+        bind(_this.__canvas, eventName, eventHandler);
+      } else {
+        _this.__events_platform[eventName].push(eventHandler);
+      }
+    }); // 这里的回调函数doback和上面区域事件回调保持一致
+
+    this.$bind = function (eventName, doback) {
+      var _this2 = this;
+
+      var eventHandler = function eventHandler(event) {
+        _this2.__regionManager.getRegion(event, function (region) {
+          var callbackValue;
+
+          if (region[0] != null) {
+            var regionSplit = region[0].split('::');
             var regionNameSplit = regionSplit[0].split('@');
-            var curSeires = _this.__renderSeries[regionNameSplit[0]]; // 整理属性信息
+            var curSeires = _this2.__renderSeries[regionNameSplit[0]]; // 整理属性信息
 
             var attr = {};
 
             for (var attrKey in curSeires.attr) {
               attr[attrKey] = curSeires.attr[attrKey].value;
-            } // 调用回调
+            }
 
-
-            doback.call(_this, {
+            callbackValue = {
               id: curSeires.id,
               series: curSeires.name,
               region: regionNameSplit[1],
@@ -3140,57 +3324,33 @@
               left: region[1],
               top: region[2],
               data: region[3]
-            });
-          }
-        }
-      });
-    }); // 这里的回调函数doback和上面区域事件回调保持一致
-
-    this.$bind = function (eventName, doback) {
-      var _this2 = this;
-
-      bind(this.__canvas, eventName, function (event) {
-        var region = _this2.__regionManager.getRegion(event);
-
-        var callbackValue;
-
-        if (region[0] != null) {
-          var regionSplit = region[0].split('::');
-          var regionNameSplit = regionSplit[0].split('@');
-          var curSeires = _this2.__renderSeries[regionNameSplit[0]]; // 整理属性信息
-
-          var attr = {};
-
-          for (var attrKey in curSeires.attr) {
-            attr[attrKey] = curSeires.attr[attrKey].value;
+            };
+          } else {
+            callbackValue = {
+              series: null,
+              region: null,
+              subRegion: null,
+              attr: {},
+              left: -1,
+              top: -1,
+              data: null
+            };
           }
 
-          callbackValue = {
-            id: curSeires.id,
-            series: curSeires.name,
-            region: regionNameSplit[1],
-            subRegion: regionSplit[1],
-            attr: attr,
-            left: region[1],
-            top: region[2],
-            data: region[3]
-          };
-        } else {
-          callbackValue = {
-            series: null,
-            region: null,
-            subRegion: null,
-            attr: {},
-            left: -1,
-            top: -1,
-            data: null
-          };
-        }
+          callbackValue.left = region[1];
+          callbackValue.top = region[2];
+          doback.call(_this2, callbackValue);
+        });
+      };
 
-        callbackValue.left = region[1];
-        callbackValue.top = region[2];
-        doback.call(_this2, callbackValue);
-      });
+      if (this._platform == 'default') {
+        bind(this.__canvas, eventName, eventHandler);
+      } else {
+        if (!(eventName in this.__events_platform)) this.__events_platform[eventName] = [];
+
+        this.__events_platform[eventName].push(eventHandler);
+      }
+
       return this;
     }; // 挂载完毕以后，同步标志
 
@@ -3246,9 +3406,34 @@
     return this;
   };
 
-  Clunch.prototype.$resize = function () {
-    if (this._isMounted) {
-      this.$$updateWithSize();
+  Clunch.prototype.$resize = function (width, height) {
+    if (this._isMounted || this._platform != 'default') {
+      if (this._platform != 'default') {
+        if (!isNumber(width)) {
+          console.warn('The width undefined!');
+          return this;
+        }
+
+        if (!isNumber(height)) {
+          console.warn('The height undefined!');
+          return this;
+        }
+
+        this.$$lifecycle('beforeResize');
+        this._width = width;
+        this._height = height;
+        this._max = width > height ? width : height;
+        this._min = width < height ? width : height; // 更新区域大小
+
+        if (this.__regionManager != null) {
+          this.__regionManager.updateSize(width, height);
+        }
+
+        this.$$updateWithData(true);
+        this.$$lifecycle('resized');
+      } else {
+        this.$$updateWithSize();
+      }
     } else {
       // 如果组件未挂载，无法更新大小
       console.warn('The clunch not mounted!');

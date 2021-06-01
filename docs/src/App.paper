@@ -12,8 +12,11 @@
                 <li title='带你一步步学习使用' @click='openRouter("course")' class='menu-1 course'>
                     教程
                 </li>
+                <li title='使用中经常遇到的问题或疑惑' @click='openRouter("qa")' class='menu-1 qa'>
+                    常见问题
+                </li>
                 <li title='基于clunch开发的例子' class='menu-1 examples'>
-                    <a href="#/examples" target="_blank">小例子</a>
+                    <a href="#/examples" target="_blank">演示用例</a>
                 </li>
                 <li title='issue'>
                     <a href="https://github.com/hai2007/clunch/issues" target="_blank">联系我们</a>
@@ -63,6 +66,11 @@
 
 </script>
 <style>
+    #root-view {
+        height: 100vh;
+        overflow: auto;
+    }
+
     article>nav {
         line-height: .44rem;
         height: .44rem;
@@ -155,6 +163,6 @@
 
     div.footer a:hover {
         font-weight: 800;
-        color:rgb(3, 132, 245);
+        color: rgb(3, 132, 245);
     }
 </style>

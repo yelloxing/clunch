@@ -5,30 +5,41 @@ import { initPainterConfig } from '../../painter/config';
 
 // 区域对象，用于存储区域信息,解决canvas交互问题
 
-export default function (that) {
+export default function (that, el) {
+
+    let _width = 1, _height = 1;
 
     let regions = {},//区域映射表
         rgb = [0, 0, 0],//区域标识色彩,rgb(0,0,0)表示空白区域
         p = 'r';//色彩增值位置
 
     // 用于计算包含关系的画板
-    let canvas = document.createElement('canvas');
-    let painter = _painter(canvas, 1, 1);
+    let canvas, painter;
 
-    let _width = 1, _height = 1;
-
-    let regions_data = {};
+    if (that._platform == 'default') {
+        canvas = document.createElement('canvas');
+        painter = _painter(that._platform, canvas, 1, 1);
+    } else {
+        canvas = el.region;
+        painter = _painter(that._platform, {
+            painter: el.region
+        }, el.width, el.height);
+        _width = el.width;
+        _height = el.height;
+    }
 
     return {
+
+        // 非默认平台的draw方法
+        "draw": function () {
+            canvas.draw();
+        },
 
         // 擦除
         "erase": function () {
             painter.config({
                 fillStyle: 'rgb(255,255,255)'
             }).fillRect(0, 0, _width, _height);
-
-            // 清空记录的数据
-            regions_data = {};
         },
 
         // 更新大小
@@ -36,7 +47,13 @@ export default function (that) {
 
             _width = width;
             _height = height;
-            painter = _painter(canvas, width, height);
+            if (that._platform == 'default') {
+                painter = _painter(that._platform, canvas, width, height);
+            } else {
+                painter = _painter(that._platform, {
+                    painter: el.region
+                }, width, height);
+            }
 
         },
 
@@ -69,27 +86,56 @@ export default function (that) {
                 strokeStyle: regions[region_id]
             });
 
-            // 记录数据
-            regions_data[region_id] = data;
-
             return painter;
 
         },
 
         // 获取此刻鼠标所在区域
-        "getRegion": function (event) {
-            let pos = position(that.__canvas, event);
-            pos.x -= getStyle(that.__canvas, 'border-left-width').replace('px', '');
-            pos.y -= getStyle(that.__canvas, 'border-top-width').replace('px', '');
-            let currentRGBA = canvas.getContext("2d").getImageData(pos.x * 2 - 0.5, pos.y * 2 - 0.5, 1, 1).data;
-            for (let i in regions) {
-                if ("rgb(" + currentRGBA[0] + "," + currentRGBA[1] + "," + currentRGBA[2] + ")" == regions[i]) {
-                    return [i, pos.x, pos.y, regions_data[i]];
+        "getRegion": function (event, doback) {
+
+            let pos = position(that.__canvas, event), currentRGBA;
+
+            let doSearch = () => {
+                // 查找当前点击的区域
+                for (let i in regions) {
+                    if ("rgb(" + currentRGBA[0] + "," + currentRGBA[1] + "," + currentRGBA[2] + ")" == regions[i]) {
+                        doback([i, pos.x, pos.y]);
+                        return;
+                    }
                 }
+
+                // 说明当前不在任何区域
+                doback([null, pos.x, pos.y]);
+            };
+
+            if (that._platform == 'default') {
+
+                pos.x -= getStyle(that.__canvas, 'border-left-width').replace('px', '');
+                pos.y -= getStyle(that.__canvas, 'border-top-width').replace('px', '');
+
+                currentRGBA = canvas.getContext("2d").getImageData(pos.x * 2 - 0.5, pos.y * 2 - 0.5, 1, 1).data;
+
+                doSearch();
+
+            } else {
+
+                that.__options.el.getRegionColor({
+                    x: pos.x - 0.5,
+                    y: pos.y - 0.5,
+                    width: 1,
+                    height: 1,
+                    canvasId: that.__options.el.regionid,
+                    success: function success(res) {
+                        currentRGBA = res.data;
+                        doSearch();
+                    },
+                    fail: function fail(error) {
+                        throw new Error(error);
+                    }
+
+                });
             }
 
-            // 说明当前不在任何区域
-            return [null, pos.x, pos.y, null];
         }
 
     };

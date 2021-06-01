@@ -4,63 +4,106 @@ import { initPainterConfig } from './config';
 
 // 画笔对象，具体的绘制方法
 
-export default function (canvas, width, height) {
+let unSupportAttr = {};
 
-    // 获取canvas2D画笔
-    let painter = canvas.getContext("2d");
+export default function (platform, canvas, width, height) {
 
-    //  如果画布隐藏或大小为0
-    if (width == 0 || height == 0) throw new Error('Canvas is hidden or size is zero!');
+    let painter
 
-    // 设置显示大小
-    canvas.style.width = width + "px";
-    canvas.style.height = height + "px";
+    if (platform != 'default') {
 
-    // 设置画布大小（画布大小设置为显示的二倍，使得显示的时候更加清晰）
-    canvas.setAttribute('width', width * 2);
-    canvas.setAttribute('height', height * 2);
+        // 非默认环境的画笔由外界提供
+        painter = canvas.painter;
 
-    // 通过缩放实现模糊问题
-    painter.scale(2, 2);
+    } else {
+
+        // 获取canvas2D画笔
+        painter = canvas.getContext("2d");
+
+        //  如果画布隐藏或大小为0
+        // 对于这种情况，修改为直接在前置拦截
+        // by 你好2007 (2021年4月29日)
+        // if (width == 0 || height == 0) throw new Error('Canvas is hidden or size is zero!');
+
+        // 设置显示大小
+        canvas.style.width = width + "px";
+        canvas.style.height = height + "px";
+
+        // 设置画布大小（画布大小设置为显示的二倍，使得显示的时候更加清晰）
+        canvas.setAttribute('width', width * 2);
+        canvas.setAttribute('height', height * 2);
+
+        // 通过缩放实现模糊问题
+        painter.scale(2, 2);
+    }
 
     // 用于记录配置
     // 因为部分配置的设置比较特殊，只先记录意图
     let config = {};
 
     // 配置生效方法
-    let useConfig = (key, value) => {
+    let useConfig = platform != 'default' ?
 
-        /**
-         * -----------------------------
-         * 特殊的设置开始
-         * -----------------------------
-         */
+        // 当前除了默认环境就是uni-app，后续如果有新增可以再调整
+        (key, value) => {
 
-        if (key == 'lineDash') {
-            painter.setLineDash(value);
-        }
+            // 如果已经存在默认配置中，说明只需要缓存起来即可
+            if (["font-size", "font-family", "arc-start-cap", "arc-end-cap"].indexOf(key) > -1) {
+                config[key] = value;
+            } else {
+                try {
+                    painter['set' + key[0].toUpperCase() + key.substr(1)](value);
+                } catch (e) {
 
-        /**
-         * -----------------------------
-         * 常规的配置开始
-         * -----------------------------
-         */
+                    if (!unSupportAttr[platform]) {
+                        unSupportAttr[platform] = {};
+                    }
 
-        // 如果已经存在默认配置中，说明只需要缓存起来即可
-        else if (["font-size", "font-family", "arc-start-cap", "arc-end-cap"].indexOf(key) > -1) {
-            config[key] = value;
-        }
+                    // 为了友好，我们只对第一次进行提示
+                    if (!unSupportAttr[platform][key]) {
+                        // 部分属性可能一些平台设置方法不兼容，这里进行调试提示
+                        unSupportAttr[platform][key] = true;
+                        console.warn("Clunch内置画笔的" + key + "属性在" + platform + "平台上不支持！");
+                    }
+                }
+            }
 
-        // 其它情况直接生效即可
-        else if (key in initPainterConfig) {
-            painter[key] = value;
-        }
+        } :
 
-        // 如果属性未被定义
-        else {
-            throw new Error('Illegal configuration item of painter : ' + key + " !");
-        }
-    };
+        // 默认环境
+        (key, value) => {
+
+            /**
+             * -----------------------------
+             * 特殊的设置开始
+             * -----------------------------
+             */
+
+            if (key == 'lineDash') {
+                painter.setLineDash(value);
+            }
+
+            /**
+             * -----------------------------
+             * 常规的配置开始
+             * -----------------------------
+             */
+
+            // 如果已经存在默认配置中，说明只需要缓存起来即可
+            else if (["font-size", "font-family", "arc-start-cap", "arc-end-cap"].indexOf(key) > -1) {
+                config[key] = value;
+            }
+
+            // 其它情况直接生效即可
+            else if (key in initPainterConfig) {
+                painter[key] = value;
+            }
+
+            // 如果属性未被定义
+            else {
+                throw new Error('Illegal configuration item of painter : ' + key + " !");
+            }
+        };
 
     // 画笔
     let enhancePainter = {
@@ -81,19 +124,19 @@ export default function (canvas, width, height) {
         // 文字
         "fillText": function (text, x, y, deg) {
             painter.save();
-            initText(painter, config, x, y, deg || 0).fillText(text, 0, 0);
+            initText(painter, config, x, y, deg || 0, platform).fillText(text, 0, 0);
             painter.restore();
             return enhancePainter;
         },
         "strokeText": function (text, x, y, deg) {
             painter.save();
-            initText(painter, config, x, y, deg || 0).strokeText(text, 0, 0);
+            initText(painter, config, x, y, deg || 0, platform).strokeText(text, 0, 0);
             painter.restore();
             return enhancePainter;
         },
         "fullText": function (text, x, y, deg) {
             painter.save();
-            initText(painter, config, x, y, deg || 0);
+            initText(painter, config, x, y, deg || 0, platform);
             painter.fillText(text, 0, 0);
             painter.strokeText(text, 0, 0);
             painter.restore();

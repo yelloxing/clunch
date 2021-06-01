@@ -83,7 +83,7 @@
     resolve: {
         alias: {
             // 比如我们当前希望基于此进行二次开发
-            'clunch': require('path').resolve('clunch/dist/clunch.core.min.js')
+            'clunch': 'clunch/dist/clunch.core.min.js'
         }
     },
 ...

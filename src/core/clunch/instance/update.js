@@ -74,6 +74,15 @@ export function updateMixin(Clunch) {
             }
         }
 
+        // 对于非默认平台，最后需要绘制一下才会显示
+
+        if (this._platform != 'default') {
+            this.__platform_painter.draw();
+            if (this.__regionManager != null) {
+                this.__regionManager.draw();
+            }
+        }
+
         this.$$lifecycle('drawed');
     };
 
@@ -85,12 +94,25 @@ export function updateMixin(Clunch) {
         let width = this.__el.clientWidth - ((getStyle(this.__el, 'padding-left') + "").replace('px', '')) - ((getStyle(this.__el, 'padding-right') + "").replace('px', ''));
         let height = this.__el.clientHeight - ((getStyle(this.__el, 'padding-top') + "").replace('px', '')) - ((getStyle(this.__el, 'padding-bottom') + "").replace('px', ''));
 
-        // 更新画布
-        this.__painter = painter(this.__canvas, width, height);
         this._width = width;
         this._height = height;
         this._max = width > height ? width : height;
         this._min = width < height ? width : height;
+
+        if (width == 0 || height == 0) {
+
+            // 画布大小标记为0
+            this.__canvas.style.width = "0px";
+            this.__canvas.style.height = "0px";
+
+            // 提前结束更新
+            this.$$lifecycle('resized');
+
+            return;
+        }
+
+        // 更新画布
+        this.__painter = painter(this._platform,this.__canvas, width, height);
 
         // 重置区域
         this.__regionManager.updateSize(width, height);

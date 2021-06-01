@@ -22,11 +22,6 @@
                         help: []
                     };
                 },
-                mounted() {
-                    setTimeout(() => {
-                        this.doCalc(flare);
-                    }, 600)
-                },
                 methods: {
                     toggerNode(target) {
                         // 在help中更新该节点的孩子是显示还是隐藏
@@ -35,11 +30,6 @@
                     },
                     doCalc: ["$tree", function ($tree) {
                         return function (data) {
-                            if (this._height == 0 || this._width == 0) {
-
-                            } else {
-
-                            }
                             this.treeData = $tree({
                                 // 配置基本的数据结构
                                 "root": initTree => initTree,

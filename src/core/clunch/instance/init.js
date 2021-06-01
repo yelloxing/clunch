@@ -13,6 +13,9 @@ export function initMixin(Clunch) {
 
         this.__options = options;
 
+        // 记录平台
+        this._platform = "platform" in options ? options.platform : "default";
+
         // 需要双向绑定的数据
         this.__data = isArray(options.data) ? serviceFactory(options.data) : (isFunction(options.data) ? options.data() : options.data);
 
@@ -83,7 +86,31 @@ export function initMixin(Clunch) {
         this._max = 0;
 
         // 区域管理者
-        this.__regionManager = region(this);
+        if (this._platform == 'default') {
+            this.__regionManager = region(this);
+        } else {
+            this.__regionManager = region(this, options.el);
+        }
+
+        // 事件处理兼容改造
+        // 主要是用于无法直接通过DOM主动绑定的环境
+        this.$$trigger = (eventName, eventParam) => {
+
+            /**
+            * eventParam={
+            *      left:number,
+            *      top:number
+            * };
+            */
+            let events = this.__events_platform[eventName];
+            for (let i = 0; i < events.length; i++) {
+                events[i]({
+                    type: 'result',
+                    position: eventParam
+                });
+            }
+
+        };
 
     };
 

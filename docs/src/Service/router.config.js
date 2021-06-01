@@ -42,6 +42,11 @@ const pages = {
             "content": () => import('../pages/api/series/reuse.paper')
         },
 
+        // 进阶
+        "enhance-platform": {
+            "content": () => import('../pages/api/enhance/platform.paper')
+        },
+
         "_default_": "object"
 
     },
@@ -68,6 +73,14 @@ const pages = {
             "content": () => import('../pages/course/series.paper')
         },
         "_default_": "introduce"
+    },
+
+    /**
+     * 常见问题
+     */
+
+    "qa": {
+        "content": () => import('../pages/qa/index.paper')
     },
 
     /**

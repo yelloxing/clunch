@@ -1,7 +1,7 @@
 <template>
     <div class='menu-view'>
         <div>
-            <h2>核心</h2>
+            <h2>基础使用</h2>
             <ul>
                 <li>
                     <h3 @click='openRouter("object")' class='menu-2 object'>绘图对象</h3>
@@ -227,6 +227,19 @@
                         </li>
                         <li>
                             <h4 @click='doScroll("link")'>图形复用</h4>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <h2>进阶使用</h2>
+            <ul>
+                <li>
+                    <h3 @click='openRouter("enhance-platform")' class='menu-2 enhance-platform'>
+                        兼容更多平台
+                    </h3>
+                    <ul>
+                        <li>
+                            <h4 @click='doScroll("uni-app")'>uni-app</h4>
                         </li>
                     </ul>
                 </li>

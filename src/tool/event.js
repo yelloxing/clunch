@@ -13,6 +13,12 @@ export function bind(target, eventType, callback) {
 
 export let position = function (target, event) {
 
+    // 如果给的直接是数据，返回即可
+    if (event.type == 'result') return {
+        x: event.position.left,
+        y: event.position.top
+    };
+
     // 返回元素的大小及其相对于视口的位置
     let bounding = target.getBoundingClientRect();
 

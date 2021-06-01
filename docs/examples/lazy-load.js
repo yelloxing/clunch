@@ -5,5 +5,7 @@ export default {
     rect: () => import('./rect.html'),
     text: () => import('./text.html'),
     ruler: () => import('./ruler.html'),
-    "polar-ruler": () => import('./polar-ruler.html')
+    "polar-ruler": () => import('./polar-ruler.html'),
+    hover: () => import('./hover.html'),
+    "hover-enhance": () => import('./hover-enhance.html'),
 };

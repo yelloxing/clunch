@@ -5,6 +5,7 @@
                 <a href="#guide" target="_blank">Home</a>
                 <a href="#/api" target="_blank">Document</a>
                 <a href="#/course" target="_blank">Course</a>
+                <a href="#/qa" target="_blank">Q&A</a>
                 <a class="active">Examples</a>
                 <a href="https://github.com/hai2007/clunch/issues" target="_blank">Issue</a>
             </nav>
